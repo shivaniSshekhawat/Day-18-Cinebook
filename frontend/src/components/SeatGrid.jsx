@@ -34,7 +34,7 @@ export default function SeatGrid({ show, onBack }) {
       showLoader("Preparing checkout...", true);
       await new Promise(resolve => setTimeout(resolve, 800));
       
-      showLoader("Opening Stripe...", true);
+      showLoader("Thank You for Booking...", true);
       const res = await checkout({ showId: show._id, seats: selected });
       if (res.data.success) {
         window.location.href = "/?status=success";

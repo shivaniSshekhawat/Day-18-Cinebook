@@ -272,3 +272,22 @@ header {
   font-weight: 600;
   color: #fff;
 }
+
+.error-container, .no-shows {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  background: #1c1c1c;
+  border-radius: 12px;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.error-container button {
+  margin-top: 20px;
+  background: #fff;
+  color: #000;
+  font-weight: bold;
+}

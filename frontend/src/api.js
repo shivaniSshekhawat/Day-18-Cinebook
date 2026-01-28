@@ -17,9 +17,21 @@ export const setupInterceptors = (showLoader, hideLoader, isManualLoading) => {
 
 api.interceptors.request.use((config) => {
   activeRequests++;
+  
+  const isShowsRequest = config.url === "/shows";
+  const defaultMessage = isShowsRequest ? "Fetching latest movies..." : "Processing...";
+  
   if (!_isManualLoading()) {
-    _showLoader("Processing...");
+    _showLoader(defaultMessage);
   }
+
+  // Handle Cold Starts (Free Tiers)
+  config.timeoutId = setTimeout(() => {
+    if (activeRequests > 0 && !_isManualLoading()) {
+      _showLoader("Server is waking up... This may take a few seconds 🎬");
+    }
+  }, 3500);
+
   return config;
 }, (error) => {
   activeRequests--;
@@ -30,21 +42,29 @@ api.interceptors.request.use((config) => {
   return Promise.reject(error);
 });
 
-api.interceptors.response.use((response) => {
-  activeRequests--;
-  if (activeRequests <= 0) {
-    activeRequests = 0;
-    _hideLoader();
-  }
-  return response;
-}, (error) => {
-  activeRequests--;
-  if (activeRequests <= 0) {
-    activeRequests = 0;
-    _hideLoader();
-  }
-  return Promise.reject(error);
-});
+  api.interceptors.response.use((response) => {
+    if (response.config.timeoutId) clearTimeout(response.config.timeoutId);
+    activeRequests--;
+    if (activeRequests <= 0) {
+      activeRequests = 0;
+      _hideLoader();
+    }
+    return response;
+  }, (error) => {
+    if (error.config?.timeoutId) clearTimeout(error.config.timeoutId);
+    activeRequests--;
+    if (activeRequests <= 0) {
+      activeRequests = 0;
+      _hideLoader();
+    }
+    
+    // Log helpful info for developers
+    if (error.code === "ERR_NETWORK") {
+      console.warn("Network Error: Is the backend URL correct? Current baseURL:", api.defaults.baseURL);
+    }
+    
+    return Promise.reject(error);
+  });
 
 export const getShows = () => api.get("/shows");
 export const getShowSeats = (id) => api.get(`/shows/${id}/seats`);
