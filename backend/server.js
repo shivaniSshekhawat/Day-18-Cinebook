@@ -8,7 +8,11 @@ const router = require("./routes");
 const app = express();
 const cors = require("cors");
 const port = 4000;
-app.use(cors());
+
+app.use(cors({
+    origin: "*", // Allow all origins for simplicity in this demo, or specify vercel frontend URL
+    credentials: true
+}));
 app.use(express.json());
 
 app.use(router);
@@ -21,7 +25,11 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).send({ error: err.message });
 });
 
-app.listen(port, () => {
-  console.clear();
-  console.log(`Example app listening on port ${port}!`);
-});
+if (require.main === module) {
+  app.listen(port, () => {
+    console.clear();
+    console.log(`Example app listening on port ${port}!`);
+  });
+}
+
+module.exports = app;
