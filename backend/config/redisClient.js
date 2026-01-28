@@ -13,11 +13,14 @@ client.on("error", (err) => console.log("Redis Client Error", err));
 
 // IIFE
 (async () => {
-  await client.connect();
-
-  await client.set("foo", "bar");
-  const result = await client.get("foo");
-  console.log(result); // >>> bar
+  try {
+    await client.connect();
+    await client.set("foo", "bar");
+    const result = await client.get("foo");
+    console.log(result); // >>> bar
+  } catch (err) {
+    console.error("Failed to connect to Redis:", err);
+  }
 })();
 
 module.exports = client;
