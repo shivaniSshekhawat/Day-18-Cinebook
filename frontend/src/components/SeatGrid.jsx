@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { getShowSeats, lockSeats, checkout } from "../api";
+import { useLoading } from "../context/LoadingContext";
 
 export default function SeatGrid({ show, onBack }) {
   const [available, setAvailable] = useState([]);
   const [lockedSeats, setLockedSeats] = useState([]);
   const [selected, setSelected] = useState([]);
+  const { showLoader, hideLoader } = useLoading();
 
   useEffect(() => {
     getShowSeats(show._id).then(res => {
@@ -25,17 +27,23 @@ export default function SeatGrid({ show, onBack }) {
 
   const book = async () => {
     try {
+      showLoader("Locking seats...", true);
       const { data } = (await lockSeats({ showId: show._id, seats: selected })).data;
       setLockedSeats(prev => [...prev, ...data]);
-      await new Promise(resolve => setTimeout(resolve, 500));
       
+      showLoader("Preparing checkout...", true);
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      showLoader("Opening Stripe...", true);
       const res = await checkout({ showId: show._id, seats: selected });
       if (res.data.success) {
         window.location.href = "/?status=success";
       } else {
+        hideLoader(true);
         alert("Booking failed!");
       }
     } catch (err) {
+      hideLoader(true);
       console.error(err);
       alert("Booking failed!");
     }

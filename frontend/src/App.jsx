@@ -1,16 +1,22 @@
 import { useEffect, useState } from "react";
-import { getShows } from "./api";
+import { getShows, setupInterceptors } from "./api";
 import ShowGrid from "./components/ShowGrid";
 import SeatGrid from "./components/SeatGrid";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import api from "./api";
+import { useLoading } from "./context/LoadingContext";
 
 export default function App() {
   const [shows, setShows] = useState([]);
   const [selectedShow, setSelectedShow] = useState(null);
   const [user, setUser] = useState(null);
   const [isRegistering, setIsRegistering] = useState(false);
+  const { showLoader, hideLoader, isManual } = useLoading();
+
+  useEffect(() => {
+    setupInterceptors(showLoader, hideLoader, () => isManual);
+  }, [isManual]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
