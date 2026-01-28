@@ -28,18 +28,12 @@ export default function App() {
     }
   }, []);
 
-  const [fetchError, setFetchError] = useState(null);
-
   const fetchShows = async () => {
     try {
-      setFetchError(null);
       const res = await getShows();
       setShows(res.data);
     } catch (err) {
       console.error("Failed to fetch shows:", err);
-      setFetchError(
-        "Failed to load movies. Please check your connection and try again.",
-      );
     }
   };
 
@@ -102,20 +96,7 @@ export default function App() {
       </header>
 
       {!selectedShow && (
-        <>
-          {fetchError ? (
-            <div className="error-container">
-              <p className="error">{fetchError}</p>
-              <button onClick={fetchShows}>🔄 Retry Fetching Movies</button>
-            </div>
-          ) : shows.length === 0 ? (
-            <div className="no-shows">
-              <p>No movies currently playing. Check back later!</p>
-            </div>
-          ) : (
-            <ShowGrid shows={shows} onSelect={setSelectedShow} />
-          )}
-        </>
+        <ShowGrid shows={shows} onSelect={setSelectedShow} />
       )}
 
       {selectedShow && (

@@ -18,17 +18,6 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Health Check Middleware
-app.use((req, res, next) => {
-  if (mongoose.connection.readyState !== 1) {
-    return res.status(503).json({ message: "Database not connected. Check environment variables (DB_URL)." });
-  }
-  if (!redisClient.isOpen) {
-     return res.status(503).json({ message: "Redis not connected. Check environment variables (REDIS_...)." });
-  }
-  next();
-});
-
 app.use(router);
 app.use("/", express.static(path.join(__dirname, "dist")));
 
