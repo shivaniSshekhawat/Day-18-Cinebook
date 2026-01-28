@@ -23,7 +23,8 @@ export default function App() {
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
       setUser(parsedUser);
-      api.defaults.headers.common["Authorization"] = `Bearer ${parsedUser.token}`;
+      api.defaults.headers.common["Authorization"] =
+        `Bearer ${parsedUser.token}`;
     }
   }, []);
 
@@ -36,7 +37,9 @@ export default function App() {
       setShows(res.data);
     } catch (err) {
       console.error("Failed to fetch shows:", err);
-      setFetchError("Failed to load movies. The server might be waking up.");
+      setFetchError(
+        "Failed to load movies. Please check your connection and try again.",
+      );
     }
   };
 
@@ -75,11 +78,13 @@ export default function App() {
           ) : (
             <Login onLogin={handleLogin} />
           )}
-          <button 
-            className="toggle-auth" 
+          <button
+            className="toggle-auth"
             onClick={() => setIsRegistering(!isRegistering)}
           >
-            {isRegistering ? "Already have an account? Login" : "Need an account? Register"}
+            {isRegistering
+              ? "Already have an account? Login"
+              : "Need an account? Register"}
           </button>
         </div>
       </div>
@@ -114,10 +119,7 @@ export default function App() {
       )}
 
       {selectedShow && (
-        <SeatGrid
-          show={selectedShow}
-          onBack={() => setSelectedShow(null)}
-        />
+        <SeatGrid show={selectedShow} onBack={() => setSelectedShow(null)} />
       )}
     </div>
   );
